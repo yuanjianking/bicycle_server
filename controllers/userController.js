@@ -56,4 +56,45 @@ module.exports = function(app){
             
         });
     });
+
+    // 注册
+    app.post('/signup', function(req, res){
+        res.writeHead(200, {'Content-Type':'application/json'});
+        var obj = {
+            code: 0,
+            message: "error",
+            content: any = null
+        }
+        var data = "";
+        req.on("error", function(err){
+
+        }).on("data", function(chunk){
+            data += chunk;
+        }).on("end", function(){
+            console.log(data);
+            var u = JSON.parse(data);
+
+            if(u == null || u.name == '' || u.email == '' || u.userName == '' || u.password == ''){
+                res.end(JSON.stringify(obj));
+                return;
+            }
+
+            user({
+                name: u.name,
+                email: u.email,
+                userName: u.userName,
+                password: u.password
+            }).save(function(err){
+                if(err){
+                    console.error(err);
+                }else{
+                    obj.code = 1;
+                    obj.message = "success";
+                }
+                console.log("add");
+                res.end(JSON.stringify(obj));
+            });
+            
+        });
+    });
 }
