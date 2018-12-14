@@ -15,12 +15,12 @@ var app = express();
 app.use(express.static('./assets'));
 app.use(bodyParser());
 
-var userController = require('./controllers/userController');
+var userController = require('./controllers/userControllerDev');
 userController(app);
-var eventController = require('./controllers/eventController');
+var eventController = require('./controllers/eventControllerDev');
 eventController(app);
 
 // 端口
-app.listen(8888);
+app.listen(8880);
 
-console.log('listening to port 8888');
+console.log('listening to port 8880');
