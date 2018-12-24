@@ -11,6 +11,7 @@ var eventSchema = new Schema({
     endDate: String,
     startTime: String,
     endTime: String,
+    endMillisecond: String
 });
 
 // 表与模型

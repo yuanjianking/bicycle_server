@@ -29,6 +29,7 @@ module.exports = function(app){
                     endDate: req.body.endDate,
                     startTime: req.body.startTime,
                     endTime: req.body.endTime,
+                    endMillisecond: endTime
                 }).save(function(err){
                     if(err){
                         console.log(err);
@@ -50,11 +51,12 @@ module.exports = function(app){
     });
 
     app.get('/eventList', function(req, res){
-
-        event.find().sort({'_id':-1}).exec(function(err, message){
+        var date = new Date();
+        event.find({"endMillisecond": {$gte: date.getTime()}}).sort({'_id':-1}).exec(function(err, message){
             if(message != null && message.length > 0){
                 res.json({
                     status:200000,
+                    sysTime:date.getTime(),
                     eventList: message
                 });
             }else{
@@ -67,7 +69,7 @@ module.exports = function(app){
     });
 
     app.post('/eventDetail', function(req, res){
-        
+
         event.find(({
             "userid":req.body.userid,
             "_id":req.body._id
@@ -98,7 +100,52 @@ module.exports = function(app){
 
     });
 
+    app.post('/guestHistoryLocation', function(req, res){
+        var startTime = new Date(req.body.startDate + ' ' + req.body.startTime).getTime();
+        var endTime = new Date(req.body.endDate + ' ' + req.body.endTime).getTime();
+        var nowTime = new Date().getTime();
+
+        // event未開始
+        if(nowTime < startTime || nowTime > endTime){
+            res.json({
+                status:201000
+            });
+            return;
+        }
+
+        location.find(({
+            "eventid":req.body.eventid,
+            "userid":req.body.userid
+        }), function(err, message){
+            if(message != null && message.length == 1){
+
+                res.json({
+                    status:200000,
+                    sysTime: new Date().getTime(),
+                    locations: message
+                });
+
+            }else {
+                res.json({
+                    status:201006
+                });
+            }
+        });
+    });
+
     app.post('/guestLocations', function(req, res){
+        // location.aggregate(
+        //     [
+        //         {$match: {"eventid":req.body.eventid}},
+        //         {$sort: {'_id':-1}},
+        //         {$group: {_id:'$userid', "userid":{$first: "$userid"}, number: {$sum: 1}, "latitude": {$first: "$latitude"}, "longitude": {$first: "$longitude"} }}
+        //     ]).then(function(message){
+        //         console.log(message);
+        //         res.json({
+        //             status:200000,
+        //             locations: message
+        //         });
+        //     });
 
         location.find(({
             "eventid":req.body.eventid
@@ -120,12 +167,25 @@ module.exports = function(app){
 
     app.post('/updateGuestLocation', function(req, res){
 
+        var startTime = new Date(req.body.startDate + ' ' + req.body.startTime).getTime();
+        var endTime = new Date(req.body.endDate + ' ' + req.body.endTime).getTime();
+        var nowTime = new Date().getTime();
+
+        // event未開始
+        if(nowTime < startTime || nowTime > endTime){
+            res.json({
+                status:201000
+            });
+            return;
+        }
+
         location.find(({
             "eventid":req.body.eventid,
             "userid":req.body.userid
         }), function(err, message){
             if(message != null && message.length > 0){
 
+                var sT = message[0].startTime;
                 location.update({
                     "eventid":req.body.eventid,
                     "userid":req.body.userid
@@ -135,13 +195,16 @@ module.exports = function(app){
                     userid: req.body.userid,
                     name: req.body.name,
                     latitude: req.body.latitude,
-                    longitude: req.body.longitude
+                    longitude: req.body.longitude,
+                    historyDistance: req.body.historyDistance
                 }, function(err, message){
                     if(err){
                         console.log(err);
                     }else{
                         res.json({
-                            status:200000
+                            status:200000,
+                            sysTime: new Date().getTime(),
+                            startTime: sT
                         });
                     }
                 });    
@@ -153,13 +216,17 @@ module.exports = function(app){
                     userid: req.body.userid,
                     name: req.body.name,
                     latitude: req.body.latitude,
-                    longitude: req.body.longitude
+                    longitude: req.body.longitude,
+                    startTime: nowTime,
+                    historyDistance: req.body.historyDistance
                 }).save(function(err){
                     if(err){
                         console.log(err);
                     }else{
                         res.json({
-                            status:200000
+                            status:200000,
+                            sysTime: new Date().getTime(),
+                            startTime: nowTime
                         });
                     }
                 });

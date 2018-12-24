@@ -6,7 +6,9 @@ var locationSchema = new Schema({
     userid: String,
     name: String,
     latitude: String,
-    longitude: String
+    longitude: String,
+    startTime: String,
+    historyDistance: String
 });
 
 // 表与模型
