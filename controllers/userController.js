@@ -1,6 +1,7 @@
 var user = require('../models/user');
 
 module.exports = function(app){
+
     app.post('/login', function(req, res){
         user.find({"userid":req.body.userid}, function(err, message){
 

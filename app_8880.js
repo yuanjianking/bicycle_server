@@ -15,10 +15,10 @@ var app = express();
 app.use(express.static('./assets'));
 app.use(bodyParser());
 
-var userController = require('./controllers/userControllerDev');
+var userController = require('./controllers/userController');
 userController(app);
-var eventController = require('./controllers/eventControllerDev');
-eventController(app);
+var eventController = require('./controllers/eventController');
+eventController(app, 8880);
 
 // 端口
 app.listen(8880);
