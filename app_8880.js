@@ -18,7 +18,7 @@ app.use(bodyParser());
 var userController = require('./controllers/userController');
 userController(app);
 var eventController = require('./controllers/eventController');
-eventController(app, 8880);
+eventController(app);
 
 // 端口
 app.listen(8880);

@@ -2,53 +2,51 @@ var event = require('../models/event');
 var user = require('../models/user');
 var location = require('../models/location');
 
-module.exports = function(app, port){
+module.exports = function(app){
 
-    if(port == 8880){
-        app.post('/makeEvent', function(req, res){
+    app.post('/makeEvent', function(req, res){
 
-            var startTime = new Date(req.body.startDate + ' ' + req.body.startTime).getTime();
-            var endTime = new Date(req.body.endDate + ' ' + req.body.endTime).getTime();
-            var nowTime = new Date().getTime();
-            if(isNaN(startTime) || isNaN(endTime) || endTime <= startTime || startTime <= nowTime){            
-                res.json({
-                    status:201005
-                });
-                return;
-            }
-
-            user.find({"userid":req.body.userid}, function(err, message){
-                if(message != null && message.length > 0){
-                    
-                    event({
-                        userid: req.body.userid,
-                        name: req.body.name,
-                        detail: req.body.detail,
-                        latitude: req.body.latitude,
-                        longitude: req.body.longitude,
-                        startDate: req.body.startDate,
-                        endDate: req.body.endDate,
-                        startTime: req.body.startTime,
-                        endTime: req.body.endTime,
-                        endMillisecond: endTime
-                    }).save(function(err){
-                        if(err){
-                            console.log(err);
-                        }else{
-                            res.json({
-                                status:200000
-                            });
-                        }
-                    });
-
-                }else{
-                    res.json({
-                        status:201002
-                    });
-                }
+        var startTime = new Date(req.body.startDate + ' ' + req.body.startTime).getTime();
+        var endTime = new Date(req.body.endDate + ' ' + req.body.endTime).getTime();
+        var nowTime = new Date().getTime();
+        if(isNaN(startTime) || isNaN(endTime) || endTime <= startTime || startTime <= nowTime){            
+            res.json({
+                status:201005
             });
+            return;
+        }
+
+        user.find({"userid":req.body.userid}, function(err, message){
+            if(message != null && message.length > 0){
+                
+                event({
+                    userid: req.body.userid,
+                    name: req.body.name,
+                    detail: req.body.detail,
+                    latitude: req.body.latitude,
+                    longitude: req.body.longitude,
+                    startDate: req.body.startDate,
+                    endDate: req.body.endDate,
+                    startTime: req.body.startTime,
+                    endTime: req.body.endTime,
+                    endMillisecond: endTime
+                }).save(function(err){
+                    if(err){
+                        console.log(err);
+                    }else{
+                        res.json({
+                            status:200000
+                        });
+                    }
+                });
+
+            }else{
+                res.json({
+                    status:201002
+                });
+            }
         });
-    }
+    });
 
     app.get('/eventList', function(req, res){
         var date = new Date();
