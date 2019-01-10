@@ -184,7 +184,16 @@ module.exports = function(app){
             if(message != null && message.length > 0){
 
                 var sT = message[0].startTime;
-                location.update({
+                var currentDis = +req.body.currentDistance;
+                var historyDis = +req.body.historyDistance;
+                var distance;
+                // 歴史歩行距離が未取になり、ユーザー座標を更新する場合
+                if(historyDis == 0){
+                    distance = +message[0].historyDistance + currentDis;
+                }else{
+                    distance = historyDis + currentDis;
+                }
+                location.updateOne({
                     "eventid":req.body.eventid,
                     "userid":req.body.userid
                 },
@@ -194,7 +203,7 @@ module.exports = function(app){
                     name: req.body.name,
                     latitude: req.body.latitude,
                     longitude: req.body.longitude,
-                    historyDistance: req.body.historyDistance
+                    historyDistance: distance
                 }, function(err, message){
                     if(err){
                         console.log(err);
