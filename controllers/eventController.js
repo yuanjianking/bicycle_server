@@ -165,8 +165,8 @@ module.exports = function(app){
 
     app.post('/updateGuestLocation', function(req, res){
 
-        var startTime = new Date(req.body.startDate + ' ' + req.body.startTime).getTime();
-        var endTime = new Date(req.body.endDate + ' ' + req.body.endTime).getTime();
+        var startTime = new Date(req.body.eventStartDate + ' ' + req.body.eventStartTime).getTime();
+        var endTime = new Date(req.body.eventEndDate + ' ' + req.body.eventEndTime).getTime();
         var nowTime = new Date().getTime();
 
         // event未開始
