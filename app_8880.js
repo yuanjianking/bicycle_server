@@ -14,6 +14,27 @@ var app = express();
 // 静态文件夹
 app.use(express.static('./assets'));
 app.use(bodyParser());
+app.use(function(req, res, next){
+    if(req.url == "/login" || req.url == "/signup"){
+        next();
+        return;
+    }
+    // JWT の検証に必要な公開キーを取得する
+    const publicKey = fs.readFileSync('./config/public.key');
+    var token = req.header("token");
+    // Tokenの検証
+    jwt.verify(token, publicKey, (error, decoded) => {
+        if (error) {
+            console.log("jwt error:" + error.message)
+            res.json({
+                status:202000
+            });
+            return
+        }
+        console.log(decoded)
+        next();
+    });
+});
 
 var userController = require('./controllers/userController');
 userController(app);
